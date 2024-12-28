@@ -7,9 +7,31 @@
 #include <fstream>
 #include <string>
 #include <netdb.h>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #define PORT "8080"
 #define BUFFER 4096
+
+struct HttpRequest
+{
+    std::string method;
+    std::string path;
+    std:: string version;
+};
+
+HttpRequest parseRequestHandler(std::string& request)
+{
+    HttpRequest req;
+    std::istringstream stream(request);
+
+    if (!(stream >> req.method >> req.path >> req.version)) {
+        std::cerr << "Invalid HTTP Request" << std::endl;
+    }
+
+    return req;
+}
 
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -108,9 +130,34 @@ int main(int argc, char const *argv[])
             continue;
         }
 
-        buf[BUFFER] = '\0';
+        buf[numbytes] = '\0';
+        std::string Request(buf);
 
-        std::cout << "Data Received: " << buf << std::endl;
+        HttpRequest parseRequest = parseRequestHandler(Request);
+        
+        std::string body;
+        std::string status;
+        std::string Response;
+        if(parseRequest.method == "GET")
+        {
+            body = "Basic HTTP Server";
+            status = "HTTP/1.1 200 OK\r\n";
+        }
+        else
+        {
+            body = "Invalid Method";
+            status = "HTTP/1.1 405 Method Not Allowed\r\n";
+        }
+
+        Response = body + status;
+
+        int sentBytes = send(client_sockfd, Response.c_str(), Response.size(), 0);
+        if(sentBytes == -1)
+        {
+            std::cerr << "Error: Sending response" <<std::endl;
+        }
+
+        close(client_sockfd);
     }
 
     return 0;
