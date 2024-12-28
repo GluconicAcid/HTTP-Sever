@@ -20,13 +20,14 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(int argc, char const *argv[])
 {
-    int rv;
+    int rv, numbytes;
     int optval = 1;
     socklen_t addr_size;
     char s[INET6_ADDRSTRLEN];
     int sockfd, client_sockfd;
     struct sockaddr_storage client_addr;
     struct addrinfo hints{}, *servinfo, *p;
+    char buf[BUFFER];
 
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -93,7 +94,23 @@ int main(int argc, char const *argv[])
 
         std::cout << "Got connection from " << s << std::endl; 
 
-        
+        numbytes = recv(client_sockfd, buf, BUFFER - 1, 0);
+        if(numbytes == -1)
+        {
+            std::cerr << "Error: Receive" <<std::endl;
+            close(client_sockfd);
+            exit(1);
+        }
+        else if(numbytes == 0)
+        {
+            std::cout << "Client Disconnected" << std::endl;
+            close(client_sockfd);
+            continue;
+        }
+
+        buf[BUFFER] = '\0';
+
+        std::cout << "Data Received: " << buf << std::endl;
     }
 
     return 0;
