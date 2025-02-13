@@ -140,12 +140,12 @@ int main(int argc, char const *argv[])
         std::string Response;
         if(parseRequest.method == "GET")
         {
-            body = "Basic HTTP Server";
+            body = "Basic HTTP Server\r\n";
             status = "HTTP/1.1 200 OK\r\n";
         }
         else
         {
-            body = "Invalid Method";
+            body = "Invalid Method\r\n";
             status = "HTTP/1.1 405 Method Not Allowed\r\n";
         }
 
