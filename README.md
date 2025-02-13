@@ -13,7 +13,7 @@ This project is a simple HTTP server written in C++ using **POSIX sockets**. It 
 
 ## Prerequisites
 To compile and run the server, you need:
-- A **Linux** or **Mac** environment (Windows users can use WSL or MinGW).
+- A **Linux** or **Mac** environment (Windows users can use WSL).
 - A **C++ compiler** (GCC or Clang).
 
 ## Installation & Usage
